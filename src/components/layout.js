@@ -1,66 +1,73 @@
 import Head from "next/head";
-import styles from "./layout.module.css";
-import utilStyles from "../styles/utils.module.css";
-import Link from "next/link";
 
-const name = "Michael Li";
-export const siteTitle = "SF-HI Site";
+import Header from "./Header";
+import Menu from "./Menu";
+import Contact from "./Contact";
+import Footer from "./Footer";
 
-export default function Layout({ children, home }) {
-  return (
-    <div className={styles.container}>
-      <Head>
-        <link rel="icon" href="/favicon.ico" />
-        <meta
-          name="description"
-          content="Learn how to build a personal website using Next.js"
-        />
-        <meta
-          property="og:image"
-          content={`https://og-image.now.sh/${encodeURI(
-            siteTitle
-          )}.png?theme=light&md=0&fontSize=75px&images=https%3A%2F%2Fassets.vercel.com%2Fimage%2Fupload%2Ffront%2Fassets%2Fdesign%2Fnextjs-black-logo.svg`}
-        />
-        <meta name="og:title" content={siteTitle} />
-        <meta name="twitter:card" content="summary_large_image" />
-      </Head>
-      <header className={styles.header}>
-        {home ? (
-          <>
-            <img
-              src="/images/profile.jpg"
-              className={`${styles.headerHomeImage} ${utilStyles.borderCircle}`}
-              alt={name}
-            />
-            <h1 className={utilStyles.heading2Xl}>{name}</h1>
-          </>
-        ) : (
-          <>
-            <Link href="/">
-              <a>
-                <img
-                  src="/images/profile.jpg"
-                  className={`${styles.headerImage} ${utilStyles.borderCircle}`}
-                  alt={name}
-                />
-              </a>
-            </Link>
-            <h2 className={utilStyles.headingLg}>
-              <Link href="/">
-                <a className={utilStyles.colorInherit}>{name}</a>
-              </Link>
-            </h2>
-          </>
-        )}
-      </header>
-      <main>{children}</main>
-      {!home && (
-        <div className={styles.backToHome}>
-          <Link href="/">
-            <a>← Back to home</a>
-          </Link>
+class Layout extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isMenuVisible: false,
+      loading: "is-loading",
+    };
+    this.handleToggleMenu = this.handleToggleMenu.bind(this);
+  }
+
+  componentDidMount() {
+    this.timeoutId = setTimeout(() => {
+      this.setState({ loading: "" });
+    }, 100);
+  }
+
+  componentWillUnmount() {
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+  }
+
+  handleToggleMenu() {
+    this.setState({
+      isMenuVisible: !this.state.isMenuVisible,
+    });
+  }
+
+  render() {
+    return (
+      <div
+        className={`body ${this.state.loading} ${
+          this.state.isMenuVisible ? "is-menu-visible" : ""
+        }`}
+      >
+        <Head>
+          <title>SF-HI design & development</title>
+          <link rel="icon" href="/static/favicon.ico"></link>
+          <meta
+            name="description"
+            content="Vancvouer digital design development"
+          />
+          <link href="/css/skel.css" rel="stylesheet" />
+          <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+            rel="stylesheet"
+          />
+          <link
+            href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,600,600i"
+            rel="stylesheet"
+          />
+        </Head>
+
+        <div id="wrapper">
+          <Header onToggleMenu={this.handleToggleMenu} />
+          {this.props.children}
+          <Contact />
+          <Footer />
         </div>
-      )}
-    </div>
-  );
+        <Menu onToggleMenu={this.handleToggleMenu} />
+      </div>
+    );
+  }
 }
+
+export default Layout;
